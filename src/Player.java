@@ -19,6 +19,17 @@ public class Player {
         this.name = "dealer";
     }
 
+    public int getTotal() {
+        return total;
+    }
+
+    public boolean isOut() {
+        return isOut;
+    }
+
+    public void setOut(boolean out) {
+        isOut = out;
+    }
 
     public Player (String name, ArrayList<Card> hand)
     {

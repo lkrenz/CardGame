@@ -23,7 +23,7 @@ public class Game {
         }
     }
 
-    public int playFullGame()
+    public void playFullGame()
     {
         printInstructions();
         while (checkWin() == null)
@@ -33,19 +33,26 @@ public class Game {
             {
                 p.reset();
             }
-            playGame().addPoints(1);
+            playGame();
         }
         System.out.println(checkWin().getName() + " Wins!");
     }
 
-    public Player playGame()
+    public void playGame()
     {
+        Player dealer = new Player();
+        Scanner s = new Scanner(System.in);
         ArrayList<Player> round = new ArrayList<Player>();
         for (Player p : players)
         {
             round.add(p);
         }
         int numPlayers = players.size();
+        while (round.size() > 0 && dealer.getTotal() < 21)
+        {
+            playRound(round);
+        }
+        addWinners(round);
     }
 
     public void playRound(ArrayList<Player> roundPlayers)
@@ -53,22 +60,36 @@ public class Game {
         Scanner s = new Scanner(System.in);
         for (int i = 0; i < roundPlayers.size(); i++)
         {
-            if (playerMove(roundPlayers.get(i)))
+            System.out.println("Your current score is: " + roundPlayers.get(i).getTotal());
+            System.out.println(roundPlayers.get(i).getName() + " enter 1 for hit or 2 for stay: ");
+            if (s.nextInt() == 1)
             {
-                roundPlayers.remove(i);
+                if (playerMove(roundPlayers.get(i)))
+                {
+                    System.out.println("You busted, score: " + roundPlayers.get(i).getTotal());
+                    roundPlayers.remove(i);
+                }
+                System.out.println("Your new total is " + roundPlayers.get(i).getTotal());
+                continue;
             }
+            System.out.println("You're holding with a score of: " + roundPlayers.get(i).getTotal());
+            roundPlayers.get(i).setOut(true);
         }
+        dealerMove();
     }
 
-    public boolean dealerMove()
+    public void dealerMove()
     {
-
+        if (dealer.getTotal() <= 15)
+            dealer.takeCard(deck.deal().getValue());
     }
 
 
     public boolean playerMove(Player player)
     {
-        player.takeCard(deck.deal().getValue())
+        if (player.takeCard(deck.deal().getValue()))
+            return true;
+        return false;
     }
 
     public Player checkWin()
@@ -81,6 +102,14 @@ public class Game {
             }
         }
         return null;
+    }
+
+    public void addWinners(ArrayList<Player> winners)
+    {
+        for (Player p : winners)
+        {
+            p.addPoints(1);
+        }
     }
 
     public static void printInstructions()
@@ -96,6 +125,7 @@ public class Game {
 
 
     public static void main(String[] args) {
-
+        Game g = new Game(1);
+        g.playFullGame();
     }
 }

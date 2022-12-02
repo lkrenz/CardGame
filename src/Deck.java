@@ -58,7 +58,7 @@ public class Deck {
     {
         for (int i = 0; i < deck.size(); i++)
         {
-            int index = (int) (Math.random() * (deck.size() + 1));
+            int index = (int) (Math.random() * deck.size());
             deck.set(i, deck.set(index, deck.get(i)));
         }
         cardsLeft = deck.size();
