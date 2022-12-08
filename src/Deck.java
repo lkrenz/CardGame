@@ -1,51 +1,55 @@
-import java.sql.Array;
 import java.util.ArrayList;
 
 public class Deck {
-    private ArrayList<Card> deck;
+    private final ArrayList<Card> deck;
     private int cardsLeft;
-
-    private static String[] suits = {"Hearts", "Spades", "Diamonds", "Clubs"};
-
-    private static String[] ranks = {"Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"};
-
-//    public Deck(String[] rank, String[] suit, int[] values)
-//    {
-//        deck = new ArrayList<Card>();
-//        cardsLeft = rank.length;
-//        for (int i = 0; i < suit.length; i++)
-//        {
-//            for (int j = 0; j < rank.length; j++)
-//            {
-//                deck.add(new Card(suit[i], rank[j], j + 1));
-//            }
-//        }
-//    }
+    private static final String[] suits = {"Hearts", "Spades", "Diamonds", "Clubs"};
+    private static final String[] ranks = {"Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"};
+    //Constructor for irregular deck
+    public Deck(String[] rank, String[] suit, int[] values)
+    {
+        deck = new ArrayList<Card>();
+        cardsLeft = rank.length;
+        for (String s : suits)
+        {
+            for (int j = 0; j < rank.length; j++)
+            {
+                deck.add(new Card(s, rank[j], values[j]));
+            }
+        }
+    }
+    //Constructor for normal deck
     public Deck()
     {
         deck = new ArrayList<Card>();
         cardsLeft = 52;
-        for (int i = 0; i < suits.length; i++)
+        for (String s : suits)
         {
             for (int j = 0; j < ranks.length; j++)
             {
-                deck.add(new Card(suits[i], ranks[j], j + 1));
+                int val = j;
+                if (val > 9)
+                {
+                    val = 9;
+                }
+                deck.add(new Card(s, ranks[j], val + 1));
             }
         }
     }
-
+    //Returns true if every card has been dealt
     public boolean isEmpty()
     {
         if (cardsLeft > 0)
-            return true;
-        return false;
+            return false;
+        return true;
     }
+
 
     public int getCardsLeft()
     {
         return cardsLeft;
     }
-
+    //Deals the car at cardLeft and subtracts cardsLeft by one
     public Card deal()
     {
         if (isEmpty())
@@ -53,7 +57,7 @@ public class Deck {
         cardsLeft--;
         return deck.get(cardsLeft);
     }
-
+    //shuffles the deck and resets cardsLeft to the number of cards
     public void shuffle()
     {
         for (int i = 0; i < deck.size(); i++)

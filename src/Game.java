@@ -1,131 +1,191 @@
-import java.sql.SQLOutput;
-import java.util.ArrayList;
+//Liam Krenz
+//December 7th 2022
+
+
 import java.util.Scanner;
-public class Game {
-    private ArrayList<Player> players;
-    private Player dealer;
-    private Deck deck;
+public class Game
+{
+    Scanner s = new Scanner(System.in);
+    private final Player player;
+    private final Deck deck;
 
-    public Game(int numPlayers){
+    private final Player dealer;
 
-        Scanner s = new Scanner(System.in);
 
-        dealer = new Player();
-
-        players = new ArrayList<Player>();
-
-        this.deck = new Deck();
-
-        for (int i = 0; i < numPlayers; i++)
-        {
-            System.out.println("Enter player name: ");
-            players.add(new Player(s.nextLine()));
-        }
+    //Establishes a new game
+    public Game()
+    {
+        System.out.println("Input your name: ");
+        player = new Player(s.nextLine());
+        deck = new Deck();
+        dealer = new Player("dealer");
     }
 
+
+    //runs up the 9 rounds of the game and prints the winner
     public void playFullGame()
     {
         printInstructions();
-        while (checkWin() == null)
+        while (player.getPoints() < 5 && dealer.getPoints() < 5)
         {
-            deck.shuffle();
-            for (Player p : players)
-            {
-                p.reset();
-            }
             playGame();
         }
-        System.out.println(checkWin().getName() + " Wins!");
+        if (player.getPoints() == 5)
+        {
+            System.out.println("You win!!!!");
+        }
+        else
+        {
+            System.out.println("The computer won :(");
+        }
+
     }
 
+    //Runs through rounds of the game until someone busts or the player holds
     public void playGame()
     {
-        Player dealer = new Player();
-        Scanner s = new Scanner(System.in);
-        ArrayList<Player> round = new ArrayList<Player>();
-        for (Player p : players)
+        initiateRound();
+        while (player.getTotal() <= 21 && dealer.getTotal() <= 21)
         {
-            round.add(p);
+            if (playRound())
+                break;
         }
-        int numPlayers = players.size();
-        while (round.size() > 0 && dealer.getTotal() < 21)
+        //If a player busts the dealer wins
+        if (player.getTotal() > 21)
         {
-            playRound(round);
+            dealer.addPoints(1);
+            System.out.println("You busted so the dealer won.");
         }
-        addWinners(round);
-    }
-
-    public void playRound(ArrayList<Player> roundPlayers)
-    {
-        Scanner s = new Scanner(System.in);
-        for (int i = 0; i < roundPlayers.size(); i++)
+        else if (dealer.getTotal() > 21)
         {
-            System.out.println("Your current score is: " + roundPlayers.get(i).getTotal());
-            System.out.println(roundPlayers.get(i).getName() + " enter 1 for hit or 2 for stay: ");
-            if (s.nextInt() == 1)
-            {
-                if (playerMove(roundPlayers.get(i)))
-                {
-                    System.out.println("You busted, score: " + roundPlayers.get(i).getTotal());
-                    roundPlayers.remove(i);
-                }
-                System.out.println("Your new total is " + roundPlayers.get(i).getTotal());
-                continue;
-            }
-            System.out.println("You're holding with a score of: " + roundPlayers.get(i).getTotal());
-            roundPlayers.get(i).setOut(true);
+            //If the dealer busts the player wins
+            player.addPoints(1);
+            System.out.println("The dealer busted so you won!");
         }
-        dealerMove();
-    }
-
-    public void dealerMove()
-    {
-        if (dealer.getTotal() <= 15)
-            dealer.takeCard(deck.deal().getValue());
+        else if (player.getTotal() > dealer.getTotal())
+        {
+            //If nobody busted and the player has a higher hand, they win
+            player.addPoints(1);
+            System.out.println("You win this round!");
+        }
+        else if (dealer.getTotal() > player.getTotal())
+        {
+            //If the dealer has a higher hand they win
+            dealer.addPoints(1);
+            System.out.println("The dealer won this round");
+        }
+        else if (dealer.getTotal() == player.getTotal())
+        {
+            //If the hands are equal, it is a tie
+            System.out.println("This round is a tie!");
+        }
+        printScore();
     }
 
 
-    public boolean playerMove(Player player)
+    //Makes the moves for both player and computer, if either bust the round stops
+    public boolean playRound()
     {
-        if (player.takeCard(deck.deal().getValue()))
+        if (playerMove())
+            return true;
+        if (dealerMove())
             return true;
         return false;
     }
 
-    public Player checkWin()
+
+    public void initiateRound()
     {
-        for (Player p : players)
-        {
-            if (p.getPoints() == 5)
-            {
-                return p;
-            }
-        }
-        return null;
+        deck.shuffle();
+        player.reset();
+        dealer.reset();
+        startHand(player);
+        startHand(dealer);
     }
 
-    public void addWinners(ArrayList<Player> winners)
+    public void startHand(Player p)
     {
-        for (Player p : winners)
+        p.addCard(deck.deal());
+        p.addCard(deck.deal());
+    }
+
+
+    //Prints the user's hand and prompts them for their move
+    public boolean playerMove()
+    {
+        clearScreen();
+        player.printStatus();
+        System.out.println("Enter 1 to hit, 2 to stand: ");
+        if (s.nextInt() == 1)
         {
-            p.addPoints(1);
+            Card card = deck.deal();
+            System.out.println(card.getRank());
+            if (player.addCard(card))
+            {
+                //if player busts it prints their score and exits
+                System.out.println("You busted, total: " + player.getTotal());
+                return true;
+            }
+            System.out.println("New total: " + player.getTotal());
+            return false;
+        }
+        //If the player holds it returns true and exits
+        return true;
+    }
+
+    //Performs the dealer's move and returns true if they bust
+    public boolean dealerMove()
+    {
+        //The dealer will only draw if their total is 15 or less
+        if (dealer.getTotal() <= 15)
+        {
+            dealer.addCard(deck.deal());
+            if (dealer.getTotal() > 21)
+                return true;
+        }
+        return false;
+    }
+
+    //Prints out the rounds won by each
+    public void printScore()
+    {
+        System.out.println("Player: " + player.getPoints());
+        System.out.println("Dealer: " + dealer.getPoints());
+    }
+
+    //Clears the screen
+    public void clearScreen()
+    {
+        startMove();
+        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+    }
+
+    //Waits for the user to press enter to clear screen and beging their move
+    public void startMove()
+    {
+        Scanner s = new Scanner(System.in);
+        System.out.println("Press enter to begin your move");
+        String answer = s.nextLine();
+        while (!answer.equals(""))
+        {
+            System.out.println("Press enter to begin your move: ");
         }
     }
+
+
+
 
     public static void printInstructions()
     {
-        System.out.println("The game is blackjack, each round every player is dealt 2 cards"
-                            + " the goal is to get your card total as close to 21 as possible"
-                            + " by saying hit, you recieve another card, but be careful. if "
-                            + " you go over, you're out. Face cards are 10, and aces can be "
-                            + " one or eleven. First player to 5 round's won wins!");
+        System.out.println("The game is blackjack, each round, you are dealt 2 cards"
+                + " \nthe goal is to get your card total as close to 21 as possible"
+                + " \nby saying hit, you receive another card, but be careful. if "
+                + " \nyou go over, you're out. Face cards are 10, and aces can be "
+                + " \none or eleven. If you win five rounds before the dealer, you win");
     }
 
-
-
-
     public static void main(String[] args) {
-        Game g = new Game(1);
+        Game g = new Game();
         g.playFullGame();
     }
 }

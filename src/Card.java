@@ -2,7 +2,7 @@ public class Card {
     private String suit;
     private String rank;
     private int value;
-
+    //Constructs a card with given suit, rank, and value
     public Card(String suit, String rank, int value)
     {
         this.suit = suit;
