@@ -10,11 +10,13 @@ public class Deck {
     {
         deck = new ArrayList<Card>();
         cardsLeft = rank.length;
+        int card = 1;
         for (String s : suits)
         {
             for (int j = 0; j < rank.length; j++)
             {
-                deck.add(new Card(s, rank[j], values[j]));
+                deck.add(new Card(s, rank[j], values[j], card));
+                card++;
             }
         }
     }
@@ -23,6 +25,7 @@ public class Deck {
     {
         deck = new ArrayList<Card>();
         cardsLeft = 52;
+        int cardNum = 1;
         for (String s : suits)
         {
             for (int j = 0; j < ranks.length; j++)
@@ -32,7 +35,8 @@ public class Deck {
                 {
                     val = 9;
                 }
-                deck.add(new Card(s, ranks[j], val + 1));
+                deck.add(new Card(s, ranks[j], val + 1, cardNum));
+                cardNum++;
             }
         }
     }

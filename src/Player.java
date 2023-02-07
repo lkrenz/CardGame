@@ -96,11 +96,12 @@ public class Player {
         return name + " has " + points + " points/n" + name + "'s cards are: " + hand;
     }
 
+
     //Prints out a player's hand and total
     public void printStatus()
     {
         System.out.println(name + " your current total is: " + total);
-        System.out.print("WIth cards: ");
+        System.out.print("With cards: ");
         for (Card c : hand)
         {
             System.out.print(c.getRank() + ", ");

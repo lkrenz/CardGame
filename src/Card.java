@@ -2,12 +2,15 @@ public class Card {
     private String suit;
     private String rank;
     private int value;
+    private int cardNum;
+
     //Constructs a card with given suit, rank, and value
-    public Card(String suit, String rank, int value)
+    public Card(String suit, String rank, int value, int cardNum)
     {
         this.suit = suit;
         this.rank = rank;
         this.value = value;
+        this.cardNum = cardNum;
     }
 
     public String getSuit() {
@@ -20,6 +23,10 @@ public class Card {
 
     public String getRank() {
         return rank;
+    }
+
+    public int getCardNum() {
+        return cardNum;
     }
 
     public void setRank(String rank) {

@@ -12,6 +12,7 @@ public class Game
     private final Player dealer;
 
 
+
     //Establishes a new game
     public Game()
     {
@@ -19,6 +20,8 @@ public class Game
         player = new Player(s.nextLine());
         deck = new Deck();
         dealer = new Player("dealer");
+        GameView window = new GameView();
+
     }
 
 
