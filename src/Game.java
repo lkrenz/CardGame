@@ -3,32 +3,29 @@
 
 
 import java.util.Scanner;
+import java.util.ArrayList;
 public class Game
 {
     Scanner s = new Scanner(System.in);
     private final Player player;
     private final Deck deck;
-
     private final Player dealer;
-
-
+    private GameView window;
 
     //Establishes a new game
     public Game()
     {
+        this.window = new GameView(this);
         System.out.println("Input your name: ");
         player = new Player(s.nextLine());
         deck = new Deck();
         dealer = new Player("dealer");
-        GameView window = new GameView();
-
     }
 
 
     //runs up the 9 rounds of the game and prints the winner
     public void playFullGame()
     {
-        printInstructions();
         while (player.getPoints() < 5 && dealer.getPoints() < 5)
         {
             playGame();
@@ -96,6 +93,11 @@ public class Game
         return false;
     }
 
+    public ArrayList<Card> getPlayerHand()
+    {
+        return player.getHand();
+    }
+
 
     public void initiateRound()
     {
@@ -104,6 +106,7 @@ public class Game
         dealer.reset();
         startHand(player);
         startHand(dealer);
+        window.repaint();
     }
 
     public void startHand(Player p)
@@ -116,8 +119,6 @@ public class Game
     //Prints the user's hand and prompts them for their move
     public boolean playerMove()
     {
-        clearScreen();
-        player.printStatus();
         System.out.println("Enter 1 to hit, 2 to stand: ");
         if (s.nextInt() == 1)
         {
@@ -127,9 +128,11 @@ public class Game
             {
                 //if player busts it prints their score and exits
                 System.out.println("You busted, total: " + player.getTotal());
+                window.repaint();
                 return true;
             }
             System.out.println("New total: " + player.getTotal());
+            window.repaint();
             return false;
         }
         //If the player holds it returns true and exits

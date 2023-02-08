@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class Deck {
     private final ArrayList<Card> deck;
     private int cardsLeft;
-    private static final String[] suits = {"Hearts", "Spades", "Diamonds", "Clubs"};
+    private static final String[] suits = {"Spades", "Clubs", "Diamonds", "Hearts"};
     private static final String[] ranks = {"Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"};
     //Constructor for irregular deck
     public Deck(String[] rank, String[] suit, int[] values)
@@ -11,9 +11,9 @@ public class Deck {
         deck = new ArrayList<Card>();
         cardsLeft = rank.length;
         int card = 1;
-        for (String s : suits)
+        for (int j = 0; j < rank.length; j++)
         {
-            for (int j = 0; j < rank.length; j++)
+            for (String s : suits)
             {
                 deck.add(new Card(s, rank[j], values[j], card));
                 card++;
